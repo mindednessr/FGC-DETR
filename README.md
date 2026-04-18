@@ -1,38 +1,51 @@
 # FGC-DETR
 
-ITC-Asia: Factor Graph–Optimized Cross-Scale Detector for Wafer Defect Inspection
-- FGC-DETR: https://github.com/mindednessr/FGC-DETR
+**ITC-Asia — Factor Graph–Optimized Cross-Scale Detector for Wafer Defect Inspection**
 
 <p align="center">
   <img src="figures/fgc_arch.png" alt="FGC-DETR Architecture" width="95%" />
 </p>
 
-FGC-DETR is a wafer-defect detection repository inspired by RT-DETRv4. It encapsulates end-to-end training and inference pipelines, a flexible configuration system, and a suite of utility scripts intended for both research reproducibility and industrial deployment.
+Overview
+--------
 
-This codebase is meticulously engineered to provide a modular and reproducible foundation—featuring multiple backbone choices, configurable training schedules, and dataset adapters to streamline experimentation and productionization.
+FGC-DETR is a research-grade and production-ready codebase for wafer-defect detection. Built on RT-DETRv4 concepts, it unifies robust model implementations, experiment configuration, and utility tooling to accelerate reproducible studies and deployment.
+- FGC-DETR: https://github.com/mindednessr/FGC-DETR
 
-Contents
-- Core training and evaluation scripts: `train.py`, `test.py`.
-- Configuration system: `configs/` (YAML-driven configurations for models, datasets, and training regimes).
-- Modular components: `engine/`, `core/`, `data/`, `misc/` house the model implementations, data loaders, transforms, and utility functions.
-- Visualization and diagnostics: `tools/visualization` and `plot.py` assist with monitoring and qualitative inspection of results.
+Table of Contents
+-----------------
+
+- [FGC-DETR](#fgc-detr)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Key Features](#key-features)
+  - [Quickstart](#quickstart)
+  - [Dataset Configuration](#dataset-configuration)
+  - [Training](#training)
+  - [Evaluation \& Inference](#evaluation--inference)
+  - [Configuration Overview](#configuration-overview)
+  - [Logs \& Checkpoints](#logs--checkpoints)
+  - [Contributing](#contributing)
+  - [Acknowledgements](#acknowledgements)
+  - [License](#license)
+  - [Contact](#contact)
 
 Key Features
-- An end-to-end detector specifically tailored for wafer-defect inspection under extreme scale variance.
-- Cross-scale feature alignment to harmonize multi-resolution cues.
-- Defect edge enhancement modules to improve localization and delineation of irregular patterns.
+------------
 
-Note: This repository contains the principal implementation elements for the FGC-DETR paper and is built upon the RT-DETR framework. While not a line-by-line reproduction, the core algorithms and components faithfully reflect the methodology described in our manuscript.
+- End-to-end detector tailored for wafer-defect inspection with extreme scale variance.
+- Cross-scale feature alignment for consistent multi-resolution representation.
+- Defect edge enhancement modules to improve localization and boundary delineation.
 
 Quickstart
+----------
 
-Repository references:
+Repository references
+
 - RT-DETRv4: https://github.com/RT-DETRs/RT-DETRv4
-- YOLOs (Ultralytics): https://github.com/ultralytics/ultralytics
+- Ultralytics (YOLO family): https://github.com/ultralytics/ultralytics
 
-1. Environment setup
-
-We recommend Python 3.8+ and a compatible CUDA/cuDNN stack for GPU acceleration. Install dependencies listed in `requirements.txt` inside an isolated virtual environment:
+Environment (recommended)
 
 ```bash
 python -m venv .venv
@@ -40,7 +53,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Conda alternative:
+Conda alternative
 
 ```bash
 conda create -n fgc-detr python=3.9 -y
@@ -48,41 +61,42 @@ conda activate fgc-detr
 pip install -r requirements.txt
 ```
 
-2. Dataset configuration
+Dataset Configuration
+---------------------
 
-The codebase supports COCO-style datasets as well as common bespoke detection datasets. See `configs/dataset/` for templates (e.g., `coco_detection.yml`, `custom_detection.yml`) and modify file paths and class definitions accordingly.
+The codebase expects COCO-style annotations. See `configs/dataset/` for templates (e.g., `coco_detection.yml`, `custom_detection.yml`). Update image folders and annotation paths accordingly.
 
-Example: COCO2017 (wafer_datasets: WM-811k and MixedWM38)
-
-1. Download COCO2017 from OpenDataLab or the official COCO site.
-2. Edit the dataset paths in `configs/dataset/coco_detection.yml`:
+Example (COCO2017):
 
 ```yaml
 train_dataloader:
-    img_folder: /data/COCO2017/train2017/
-    ann_file: /data/COCO2017/annotations/instances_train2017.json
+  img_folder: /data/COCO2017/train2017/
+  ann_file: /data/COCO2017/annotations/instances_train2017.json
 val_dataloader:
-    img_folder: /data/COCO2017/val2017/
-    ann_file: /data/COCO2017/annotations/instances_val2017.json
+  img_folder: /data/COCO2017/val2017/
+  ann_file: /data/COCO2017/annotations/instances_val2017.json
 ```
 
-For custom datasets, organize images and annotations in COCO format and set `remap_mscoco_category: False` if your category IDs differ from MS COCO.
+For bespoke datasets, provide COCO-format annotations and set `remap_mscoco_category: False` if your class IDs differ from MS COCO.
 
-3. Training example
+Training
+--------
 
-Launch a training run using a chosen configuration:
+Start training with a chosen configuration:
 
 ```bash
 python train.py --config configs/fgc_detr_wafer.yml --work-dir ./logs/exp1
 ```
 
 Common arguments
-- `--config`: path to the YAML configuration file.
-- `--work-dir`: output directory for logs and checkpoints.
 
-4. Evaluation and inference
+- `--config`: YAML configuration file path.
+- `--work-dir`: directory for logs and checkpoints.
 
-Evaluate a checkpoint:
+Evaluation & Inference
+----------------------
+
+Evaluate a checkpoint (example):
 
 ```bash
 python test.py --config configs/fgc_detr_wafer.yml --checkpoint path/to/checkpoint.pth --eval bbox
@@ -94,28 +108,34 @@ Run single-image inference (see `tools/inference/demo.py`):
 python tools/inference/demo.py --config configs/fgc_detr_wafer.yml --checkpoint path/to/checkpoint.pth --image data/sample.jpg
 ```
 
-Configuration overview
+Configuration Overview
+----------------------
 
-- `configs/`: the primary configuration directory, organized by base templates, datasets, and model families (e.g., `base/`, `dataset/`, `deim/`, `rtv2/`, `rtv4/`).
-- Each YAML config encapsulates model architecture, optimizer settings, learning-rate schedules, data augmentation pipelines, and dataset paths.
+- `configs/`: primary configuration directory. Organized into `base/`, `dataset/`, and model family subfolders (e.g., `deim/`, `rtv2/`, `rtv4/`).
+- Each YAML file defines model architecture, optimizer, LR schedule, augmentations, and dataset paths.
 
-Logs & checkpoints
+Logs & Checkpoints
+------------------
 
-- Training logs and model checkpoints are saved under `logs/` or a directory specified with `--work-dir`.
-- Checkpoints use PyTorch `.pth` format and can be loaded with `test.py` for evaluation or `tools/inference` for deployment.
+- Training outputs (logs and checkpoints) are saved to `logs/` or a directory specified via `--work-dir`.
+- Checkpoints are standard PyTorch `.pth` files; loadable via `test.py` and `tools/inference` utilities.
 
 Contributing
+------------
 
-Contributions are welcome. When reporting bugs or reproducibility issues, please provide the command used, the configuration file, and environment details. For new model or dataset adapters, add configurations under `configs/` and corresponding data loaders or transforms under `data/`.
+Contributions are welcome. When opening issues or PRs, include the command used, full config file, and environment details to facilitate reproducibility. For new adapters, add configurations under `configs/` and corresponding loaders/transforms under `data/`.
 
 Acknowledgements
+----------------
 
-This project integrates ideas and implementations from multiple open-source repositories; we gratefully acknowledge those contributions.
+This project builds upon and integrates multiple open-source efforts; we gratefully acknowledge upstream contributors.
 
 License
+-------
 
-This project is governed by the LICENSE file at the repository root. Please review it prior to reuse.
+See the `LICENSE` file at the repository root for licensing terms.
 
 Contact
+-------
 
-For assistance or collaboration inquiries, open an issue or contact the repository maintainers.
+For questions or collaboration, open an issue or contact the maintainers.
