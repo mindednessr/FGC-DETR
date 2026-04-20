@@ -1,15 +1,16 @@
 # FGC-DETR
 
-**🚀ITC-Asia🚀Factor Graph–Optimized Cross-Scale Detector for Wafer Defect Inspection**
+**🚀ITC-Asia🚀 Factor Graph–Optimized Cross-Scale Detector for Wafer Defect Inspection**
 
 <p align="center">
-  <img src="figures/fgc_arch.png" alt="FGC-DETR Architecture" width="95%" />
+  <img src="figures/fgc_mAP.png" alt="FGC-DETR Architecture" width="95%" />
 </p>
 
 📄Overview
 --------
 
 FGC-DETR is a research-grade and production-ready codebase for wafer-defect detection. Built on RT-DETRv4 concepts, it unifies robust model implementations, experiment configuration, and utility tooling to accelerate reproducible studies and deployment.
+(The detailed architecture of the model will be updated after the paper is accepted.)
 - FGC-DETR: https://github.com/mindednessr/FGC-DETR
 
 Table of Contents
